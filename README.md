@@ -1,6 +1,6 @@
 [![Docker Repository on Quay](https://quay.io/repository/cresta/test-dd/status "Docker Repository on Quay")](https://quay.io/repository/cresta/test-dd)
 # test-dd
-Pod to deploy to verify datadog custom metrics and APM are working
+Pod to deploy to verify datadog custom metrics and APM are working using Unix domain sockets.
 
 # Usage
 

@@ -38,7 +38,7 @@ def dogstatsd_test():
     logging.info("starting dogstatsd test")
     while not stopPrint:
         logging.info("incr!")
-        statsd.increment("thread_function", 1.0, ["func:thread_function"])
+        statsd.increment("thread_function", 1.0, ["func:dogstatsd_test"])
         time.sleep(1)
 
 
