@@ -1,5 +1,5 @@
-from ddtrace import patch_all, tracer # noqa
-patch_all() # noqa
+from ddtrace import patch_all, tracer  # noqa
+patch_all()  # noqa
 import signal
 import atexit
 import time
@@ -8,15 +8,24 @@ import threading
 from ddtrace import tracer
 from datadog import statsd, initialize
 from flask import Flask
+import requests
 tracer.configure(uds_path="/var/run/datadog/dsd.socket")
-initialize(statsd_socket_path = "/var/run/datadog/dsd.socket")
+initialize(statsd_socket_path="/var/run/datadog/dsd.socket")
 
 application = Flask(__name__)
 
 
 @application.route("/")
 def hello():
+    logging.info("root get")
     return "<h1 style='color:blue'>Hello There!</h1>"
+
+
+@application.route("/forward")
+def hello():
+    logging.info("forward get")
+    r = requests.get('localhost', 5000)
+    return "Got %d" % r.status_code
 
 
 stopPrint = False
@@ -30,12 +39,20 @@ def doStop():
 atexit.register(doStop)
 
 
-def thread_function():
-    logging.info("starting!")
+def dogstatsd_test():
+    logging.info("starting dogstatsd test")
     while not stopPrint:
         logging.info("incr!")
-        statsd.increment("thread_function", 1.0, {"func": "thread_function"})
+        statsd.increment("thread_function", 1.0, ["func:thread_function"])
         time.sleep(1)
+
+
+def apm_test():
+    logging.info("starting!")
+    while not stopPrint:
+        r = requests.get('localhost/forward', 5000)
+        logging.info("Status code %d", r.status_code)
+        time.sleep(5)
 
 
 if __name__ == "__main__":
@@ -43,6 +60,7 @@ if __name__ == "__main__":
     logging.basicConfig(format=format, level=logging.INFO,
                         datefmt="%H:%M:%S")
     logging.info("thread start")
-    threading.Thread(target=thread_function).start()
+    threading.Thread(target=dogstatsd_test).start()
+    threading.Thread(target=apm_test).start()
     logging.info("app run")
     application.run(host='0.0.0.0')
