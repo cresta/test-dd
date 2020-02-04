@@ -4,7 +4,7 @@ metadata:
   name: ddtest
 spec:
   containers:
-  - image: quay.io/cresta/test-dd
+  - image: quay.io/cresta/test-dd:v0.1.3
     name: ddtest
     volumeMounts:
     - name: dsdsocket
