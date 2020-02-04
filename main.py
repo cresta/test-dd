@@ -1,6 +1,7 @@
 from ddtrace import patch_all, tracer  # noqa
 patch_all()  # noqa
 import signal
+import os
 import atexit
 import time
 import logging
@@ -10,17 +11,10 @@ from datadog import statsd, initialize
 from flask import Flask
 import requests
 tracer.configure(uds_path="/var/run/datadog/apm.socket")
-tracer.set_tags({"env":"ops"})
+tracer.set_tags({"env": "ops"})
 initialize(statsd_socket_path="/var/run/datadog/dsd.socket")
 
 application = Flask(__name__)
-
-
-@application.route("/forward")
-def forward():
-    logging.info("forward get")
-    r = requests.get('http://localhost:5000')
-    return "Got %d" % r.status_code
 
 
 @application.route("/")
@@ -49,10 +43,10 @@ def dogstatsd_test():
 
 
 def apm_test():
-    logging.info("starting!")
+    logging.info("starting apm every 5 minutes")
     while not stopPrint:
         time.sleep(5)
-        r = requests.get('http://localhost:5000/forward')
+        r = requests.get('http://localhost:5000')
         logging.info("Status code %d", r.status_code)
 
 
@@ -62,6 +56,8 @@ if __name__ == "__main__":
                         datefmt="%H:%M:%S")
     logging.info("thread start")
     threading.Thread(target=dogstatsd_test).start()
-    threading.Thread(target=apm_test).start()
     logging.info("app run")
-    application.run(host='0.0.0.0')
+    if os.environ["DATADOG_SERVICE_NAME"] == "ddclient":
+        apm_test()
+    else:
+        application.run(host='0.0.0.0')

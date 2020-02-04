@@ -4,11 +4,17 @@ metadata:
   name: ddtest
 spec:
   containers:
-  - image: quay.io/cresta/test-dd:v0.1.6
-    name: ddtest
+  - image: quay.io/cresta/test-dd:latest
+    name: ddserver
     env:
       - name: DATADOG_SERVICE_NAME
-        value: ddtest
+        value: ddserver
+    volumeMounts:
+    - name: dsdsocket
+      mountPath: /var/run/datadog
+      readOnly: true
+  - image: quay.io/cresta/test-dd:latest
+    name: ddclient
     volumeMounts:
     - name: dsdsocket
       mountPath: /var/run/datadog
