@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: ddtest
+spec:
+  containers:
+  - image: quay.io/cresta/test-dd
+    name: ddtest
+    volumeMounts:
+    - name: dsdsocket
+      mountPath: /var/run/datadog
+      readOnly: true
+  volumes:
+  - hostPath:
+      path: /var/run/datadog/
+    name: dsdsocket
