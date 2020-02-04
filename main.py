@@ -15,17 +15,17 @@ initialize(statsd_socket_path="/var/run/datadog/dsd.socket")
 application = Flask(__name__)
 
 
+@application.route("/forward")
+def forward():
+    logging.info("forward get")
+    r = requests.get('http://localhost:5000')
+    return "Got %d" % r.status_code
+
+
 @application.route("/")
 def hello():
     logging.info("root get")
     return "<h1 style='color:blue'>Hello There!</h1>"
-
-
-@application.route("/forward")
-def hello():
-    logging.info("forward get")
-    r = requests.get('localhost', 5000)
-    return "Got %d" % r.status_code
 
 
 stopPrint = False
@@ -50,9 +50,9 @@ def dogstatsd_test():
 def apm_test():
     logging.info("starting!")
     while not stopPrint:
-        r = requests.get('localhost/forward', 5000)
-        logging.info("Status code %d", r.status_code)
         time.sleep(5)
+        r = requests.get('http://localhost:5000/forward')
+        logging.info("Status code %d", r.status_code)
 
 
 if __name__ == "__main__":
