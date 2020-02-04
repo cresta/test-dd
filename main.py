@@ -10,6 +10,7 @@ from datadog import statsd, initialize
 from flask import Flask
 import requests
 tracer.configure(uds_path="/var/run/datadog/apm.socket")
+tracer.set_tags({"env":"ops"})
 initialize(statsd_socket_path="/var/run/datadog/dsd.socket")
 
 application = Flask(__name__)
