@@ -6,6 +6,9 @@ spec:
   containers:
   - image: quay.io/cresta/test-dd:v0.1.6
     name: ddtest
+    env:
+      - name: DATADOG_SERVICE_NAME
+        value: ddtest
     volumeMounts:
     - name: dsdsocket
       mountPath: /var/run/datadog
