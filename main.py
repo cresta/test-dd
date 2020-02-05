@@ -1,4 +1,5 @@
 from ddtrace import patch_all, tracer  # noqa
+patch(flask=True)
 patch_all()  # noqa
 import signal
 import os
@@ -11,7 +12,7 @@ from datadog import statsd, initialize
 from flask import Flask
 import requests
 tracer.configure(uds_path="/var/run/datadog/apm.socket")
-tracer.set_tags({"env": "ops"})
+tracer.set_tags({"env": os.environ.get("ENV")})
 initialize(statsd_socket_path="/var/run/datadog/dsd.socket")
 
 application = Flask(__name__)

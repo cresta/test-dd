@@ -9,12 +9,17 @@ spec:
     env:
       - name: DATADOG_SERVICE_NAME
         value: ddserver
+      - name: ENV
+        value: dev
     volumeMounts:
     - name: dsdsocket
       mountPath: /var/run/datadog
       readOnly: true
   - image: quay.io/cresta/test-dd:latest
     name: ddclient
+    env:
+      - name: ENV
+        value: dev
     volumeMounts:
     - name: dsdsocket
       mountPath: /var/run/datadog
